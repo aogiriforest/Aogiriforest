@@ -1,0 +1,203 @@
+{
+  "company": "アオギリフォレスト合同会社",
+  "mode": "架空データ・オフライン・ルールベース",
+  "opening_cash_yen": 1500000,
+  "research": [
+    {
+      "id": "DEMO-001",
+      "company": "架空・若葉木材",
+      "need": "見積作成の効率化",
+      "fit": 90,
+      "budget_yen": 1200000,
+      "cost_yen": 600000,
+      "payment_days": 30,
+      "evidence": "架空アンケートA：月40時間の見積業務",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度90/100（基準70）。根拠：架空アンケートA：月40時間の見積業務"
+    },
+    {
+      "id": "DEMO-004",
+      "company": "架空・山道物流",
+      "need": "配車補助",
+      "fit": 85,
+      "budget_yen": 1600000,
+      "cost_yen": 800000,
+      "payment_days": 90,
+      "evidence": "架空ヒアリングD：入金は90日後",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度85/100（基準70）。根拠：架空ヒアリングD：入金は90日後"
+    },
+    {
+      "id": "DEMO-002",
+      "company": "架空・青空工房",
+      "need": "問い合わせ分類",
+      "fit": 80,
+      "budget_yen": 800000,
+      "cost_yen": 650000,
+      "payment_days": 30,
+      "evidence": "架空アンケートB：月200件の問い合わせ",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度80/100（基準70）。根拠：架空アンケートB：月200件の問い合わせ"
+    },
+    {
+      "id": "DEMO-003",
+      "company": "架空・森の商店",
+      "need": "需要予測",
+      "fit": 40,
+      "budget_yen": 400000,
+      "cost_yen": 250000,
+      "payment_days": 30,
+      "evidence": "架空ヒアリングC：データ未整備",
+      "research_status": "調査継続",
+      "research_reason": "適合度40/100（基準70）。根拠：架空ヒアリングC：データ未整備"
+    }
+  ],
+  "sales": [
+    {
+      "id": "DEMO-001",
+      "company": "架空・若葉木材",
+      "need": "見積作成の効率化",
+      "fit": 90,
+      "budget_yen": 1200000,
+      "cost_yen": 600000,
+      "payment_days": 30,
+      "evidence": "架空アンケートA：月40時間の見積業務",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度90/100（基準70）。根拠：架空アンケートA：月40時間の見積業務",
+      "proposal": "見積作成の効率化の業務整理・試作・効果測定",
+      "price_yen": 1200000,
+      "sales_status": "提案草案・未送信"
+    },
+    {
+      "id": "DEMO-004",
+      "company": "架空・山道物流",
+      "need": "配車補助",
+      "fit": 85,
+      "budget_yen": 1600000,
+      "cost_yen": 800000,
+      "payment_days": 90,
+      "evidence": "架空ヒアリングD：入金は90日後",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度85/100（基準70）。根拠：架空ヒアリングD：入金は90日後",
+      "proposal": "配車補助の業務整理・試作・効果測定",
+      "price_yen": 1600000,
+      "sales_status": "提案草案・未送信"
+    },
+    {
+      "id": "DEMO-002",
+      "company": "架空・青空工房",
+      "need": "問い合わせ分類",
+      "fit": 80,
+      "budget_yen": 800000,
+      "cost_yen": 650000,
+      "payment_days": 30,
+      "evidence": "架空アンケートB：月200件の問い合わせ",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度80/100（基準70）。根拠：架空アンケートB：月200件の問い合わせ",
+      "proposal": "問い合わせ分類の業務整理・試作・効果測定",
+      "price_yen": 800000,
+      "sales_status": "提案草案・未送信"
+    }
+  ],
+  "finance": [
+    {
+      "id": "DEMO-001",
+      "company": "架空・若葉木材",
+      "need": "見積作成の効率化",
+      "fit": 90,
+      "budget_yen": 1200000,
+      "cost_yen": 600000,
+      "payment_days": 30,
+      "evidence": "架空アンケートA：月40時間の見積業務",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度90/100（基準70）。根拠：架空アンケートA：月40時間の見積業務",
+      "proposal": "見積作成の効率化の業務整理・試作・効果測定",
+      "price_yen": 1200000,
+      "sales_status": "提案草案・未送信",
+      "profit_yen": 600000,
+      "margin_percent": 50.0,
+      "finance_status": "社内審査通過・人間確認待ち",
+      "finance_reasons": [
+        "利益率・資金・入金条件を満たす"
+      ],
+      "cash_after_reservation_yen": 900000
+    },
+    {
+      "id": "DEMO-004",
+      "company": "架空・山道物流",
+      "need": "配車補助",
+      "fit": 85,
+      "budget_yen": 1600000,
+      "cost_yen": 800000,
+      "payment_days": 90,
+      "evidence": "架空ヒアリングD：入金は90日後",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度85/100（基準70）。根拠：架空ヒアリングD：入金は90日後",
+      "proposal": "配車補助の業務整理・試作・効果測定",
+      "price_yen": 1600000,
+      "sales_status": "提案草案・未送信",
+      "profit_yen": 800000,
+      "margin_percent": 50.0,
+      "finance_status": "条件見直し",
+      "finance_reasons": [
+        "先行支出後の手元資金が基準未満",
+        "入金条件が60日を超過"
+      ],
+      "cash_after_reservation_yen": 900000
+    },
+    {
+      "id": "DEMO-002",
+      "company": "架空・青空工房",
+      "need": "問い合わせ分類",
+      "fit": 80,
+      "budget_yen": 800000,
+      "cost_yen": 650000,
+      "payment_days": 30,
+      "evidence": "架空アンケートB：月200件の問い合わせ",
+      "research_status": "営業へ引継ぎ",
+      "research_reason": "適合度80/100（基準70）。根拠：架空アンケートB：月200件の問い合わせ",
+      "proposal": "問い合わせ分類の業務整理・試作・効果測定",
+      "price_yen": 800000,
+      "sales_status": "提案草案・未送信",
+      "profit_yen": 150000,
+      "margin_percent": 18.75,
+      "finance_status": "条件見直し",
+      "finance_reasons": [
+        "粗利益率が基準未満",
+        "先行支出後の手元資金が基準未満"
+      ],
+      "cash_after_reservation_yen": 900000
+    }
+  ],
+  "cash_timeline": [
+    {
+      "day": 0,
+      "id": "DEMO-001",
+      "amount_yen": -600000,
+      "balance_yen": 900000
+    },
+    {
+      "day": 30,
+      "id": "DEMO-001",
+      "amount_yen": 1200000,
+      "balance_yen": 2100000
+    }
+  ],
+  "audit": [
+    {
+      "stage": "リサーチ",
+      "input_count": 4,
+      "output_count": 4
+    },
+    {
+      "stage": "営業",
+      "input_count": 4,
+      "output_count": 3
+    },
+    {
+      "stage": "経理財務",
+      "input_count": 3,
+      "output_count": 3
+    }
+  ]
+}

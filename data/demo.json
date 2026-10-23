@@ -1,0 +1,12 @@
+{
+  "fictional": true,
+  "opening_cash_yen": 1500000,
+  "minimum_cash_yen": 500000,
+  "minimum_margin_percent": 30,
+  "leads": [
+    {"id":"DEMO-001","company":"架空・若葉木材","need":"見積作成の効率化","fit":90,"budget_yen":1200000,"cost_yen":600000,"payment_days":30,"evidence":"架空アンケートA：月40時間の見積業務"},
+    {"id":"DEMO-002","company":"架空・青空工房","need":"問い合わせ分類","fit":80,"budget_yen":800000,"cost_yen":650000,"payment_days":30,"evidence":"架空アンケートB：月200件の問い合わせ"},
+    {"id":"DEMO-003","company":"架空・森の商店","need":"需要予測","fit":40,"budget_yen":400000,"cost_yen":250000,"payment_days":30,"evidence":"架空ヒアリングC：データ未整備"},
+    {"id":"DEMO-004","company":"架空・山道物流","need":"配車補助","fit":85,"budget_yen":1600000,"cost_yen":800000,"payment_days":90,"evidence":"架空ヒアリングD：入金は90日後"}
+  ]
+}
