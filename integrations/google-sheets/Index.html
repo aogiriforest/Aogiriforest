@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>アオギリフォレスト AI本部</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#173d32;background:#f4f7f4}*{box-sizing:border-box}body{margin:0}header{background:#174a39;color:white;padding:26px 18px}h1{font-size:23px;margin:0 0 8px}p{line-height:1.7}.wrap{max-width:680px;margin:auto;padding:15px}.card{background:white;border:1px solid #dce7df;border-radius:16px;padding:18px;margin:12px 0}h2{font-size:20px;margin-top:0}h3{font-size:16px}.muted{color:#60786e;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.stat{font-size:25px;font-weight:800;margin:8px 0}button,a.button{font:inherit;border:0;border-radius:10px;background:#246a4b;color:white;padding:13px 16px;min-height:44px;cursor:pointer;display:inline-block;text-decoration:none}button:disabled{opacity:.45;cursor:default}.secondary{background:#eaf2ec;color:#174a39}textarea,input{width:100%;font:inherit;padding:12px;border:1px solid #b6cabd;border-radius:9px;color:#173d32}textarea{min-height:220px;font-family:monospace;font-size:14px}label{display:block;margin:12px 0}input[type=checkbox]{width:auto;min-width:24px;min-height:24px;vertical-align:middle}.notice{background:#fff8e6;padding:12px;border-radius:9px;line-height:1.7}.item{border-top:1px solid #e4ebe6;padding:12px 0;overflow-wrap:anywhere;white-space:pre-wrap}.error{color:#a72424}#status{white-space:pre-wrap;line-height:1.7}details{margin:14px 0}summary{cursor:pointer;min-height:44px;padding:10px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}nav{display:flex;gap:8px;flex-wrap:wrap}small{line-height:1.7}footer{text-align:center;font-size:12px;color:#60786e;padding:20px}
+</style></head><body>
+<header><h1>アオギリフォレスト AI本部</h1><div>AI秘書 × 営業部長AI × 経理財務部長AI</div></header>
+<main class="wrap">
+<div id="status" role="status" aria-live="polite">台帳に接続しています…</div>
+<nav><button class="secondary" id="refresh">台帳を再読込</button><a id="ledger" class="button secondary" target="_blank" rel="noopener" hidden>台帳を開く</a></nav>
+<section class="card"><h2>AI本部サマリー</h2><p class="muted" id="checked">保存済みの承認内容を集計します。</p><div class="grid">
+<div>営業案件数<div class="stat" id="count">—</div></div><div>見込売上合計<div class="stat" id="forecast">—</div></div>
+<div>最新月の売上<div class="stat" id="revenue">—</div></div><div>最新月の利益<div class="stat" id="profit">—</div></div></div>
+<p class="muted">見込売上は失注以外。月次実績は経理明細と二重加算しません。未登録はゼロとみなしません。</p></section>
+<section class="card"><h2>確認・承認して保存</h2><p>ChatGPTで整理したJSONを貼り付け、内容を確認します。確認前の内容は、この画面からクラウドへ保存しません。</p>
+<details><summary>ChatGPTに渡す整理用指示文</summary><p class="muted">下の指示文と対象の会話をChatGPTに渡し、JSONの回答をコピーしてください。不明な金額や日付は確認してから登録します。</p><pre id="prompt"></pre></details>
+<label for="json">整理済みJSON（ここで修正できます）</label><textarea id="json" spellcheck="false" placeholder='{"source":"会話の題名・日付","sales":[],"finance":[],"monthly":[]}'></textarea>
+<details><summary>既存HTMLのバックアップを追加取込</summary><p class="muted">既存HTMLの「バックアップを書き出す」で保存したJSONを選びます。内容の確認後に追加保存します。旧データは削除・上書きしません。営業の次の行動・期限は空欄のため必要なら修正してください。</p><input id="legacy" type="file" accept=".json,application/json" aria-label="既存HTMLのJSONバックアップ"></details>
+<button id="review">内容を確認</button><div id="reviewed" hidden><h3>保存する内容</h3><div id="preview"></div><label><input id="consent" type="checkbox"> 出典と全項目を確認し、この内容の保存を承認します</label><button id="save" disabled>承認して保存</button></div></section>
+<section class="card"><h2>営業部長AI｜承認済み案件</h2><div id="sales">読込待ち</div></section>
+<section class="card"><h2>経理財務部長AI｜承認済み記録</h2><div id="finance">読込待ち</div></section>
+<section class="card"><h2>AI秘書｜朝報</h2><p class="muted">毎朝6:00（日本時間）に処理開始指定。作成・通知は処理時間により遅れる場合があります。</p><div id="reports">読込待ち</div></section>
+<div class="notice">既存のオフラインHTMLは引き続き利用できます。この連携画面はGoogleログインとインターネット接続が必要です。Sitecaseとの自動同期はありません。</div>
+</main><footer>承認済みデータのみ反映｜日本円・日本時間</footer>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), yen=n=>'¥'+Number(n).toLocaleString('ja-JP');
+let reviewed=null, batchId=null, busy=false;
+function status(message,error=false){$('status').textContent=message;$('status').className=error?'error':'';}
+function rpc(name,arg){return new Promise((resolve,reject)=>{
+  if(!window.google || !google.script){reject(Error('Apps Scriptのウェブアプリとして開いてください。'));return;}
+  const runner=google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+  if(arg===undefined)runner[name]();else runner[name](arg);
+});}
+function item(parent,head,body){const node=document.createElement('div');node.className='item';const title=document.createElement('strong');title.textContent=head;node.append(title,document.createTextNode('\n'+body));parent.append(node);}
+function list(id,rows,render){$(id).replaceChildren();if(!rows.length)$(id).textContent='未登録';else rows.forEach(row=>render($(id),row));}
+async function refresh(){
+  $('refresh').disabled=true;
+  try{const d=await rpc('getSnapshot');
+    $('count').textContent=d.sales.length+'件';$('forecast').textContent=d.sales.length?yen(d.sales.filter(x=>x.stage!=='失注').reduce((s,x)=>s+Number(x.amount),0)):'未登録';
+    const latest=[...d.monthly].sort((a,b)=>b.month.localeCompare(a.month))[0];
+    $('revenue').textContent=latest?yen(latest.revenue):'未登録';$('profit').textContent=latest?yen(latest.revenue-latest.expense):'未登録';
+    $('checked').textContent='確認日時：'+d.checkedAt+' JST'+(latest?'｜月次対象：'+latest.month:'');
+    $('ledger').href=d.url;$('ledger').hidden=false;
+    list('sales',d.sales,(p,x)=>item(p,x.name+'｜'+x.stage,x.category+'｜'+yen(x.amount)+'\n次の行動：'+(x.nextAction||'未確認')+'\n期限：'+(x.dueDate||'未確認')));
+    list('finance',d.finance,(p,x)=>item(p,x.date+'｜'+x.type+' '+yen(x.amount),(x.partner||'取引先未確認')+'｜'+x.description+'\n決済：'+x.paymentStatus+'｜期限：'+(x.dueDate||'未確認')));
+    d.monthly.forEach(x=>item($('finance'),x.month+' 月次実績','売上 '+yen(x.revenue)+'／経費 '+yen(x.expense)+'／利益 '+yen(x.revenue-x.expense)));
+    list('reports',d.reports,(p,x)=>item(p,x[0]+' 朝報',x[2]+'\n\n'+x[3]+'\n\n'+x[4]+'\n\n'+x[5]));
+    status('承認済み台帳を読み込みました。');
+  }catch(e){status('台帳を読み込めませんでした：'+e.message,true);}finally{$('refresh').disabled=false;}
+}
+function invalidate(){reviewed=null;batchId=null;$('reviewed').hidden=true;$('consent').checked=false;$('save').disabled=true;}
+function editable(disabled){busy=disabled;['json','legacy','review','consent'].forEach(id=>$(id).disabled=disabled);$('save').disabled=disabled||!$('consent').checked;}
+$('json').addEventListener('input',invalidate);
+$('consent').addEventListener('change',()=>{$('save').disabled=!$('consent').checked||busy;});
+$('review').addEventListener('click',()=>{
+  invalidate();
+  try{const d=JSON.parse($('json').value);
+    if(!d||typeof d.source!=='string'||!d.source.trim())throw Error('sourceに出典メモを入力してください。');
+    let count=0;$('preview').replaceChildren();
+    item($('preview'),'出典',d.source);
+    ['sales','finance','monthly'].forEach((key,i)=>{
+      if(d[key]!==undefined&&!Array.isArray(d[key]))throw Error(key+'は配列にしてください。');
+      const rows=d[key]||[];count+=rows.length;
+      rows.forEach((r,n)=>item($('preview'),['営業','経理','月次'][i]+' '+(n+1),JSON.stringify(r,null,2)));
+    });
+    if(!count)throw Error('登録対象がありません。');
+    reviewed=d;batchId=crypto.randomUUID();$('reviewed').hidden=false;status('全項目を確認してから保存を承認してください。');
+  }catch(e){status('内容を確認してください：'+e.message,true);}
+});
+$('save').addEventListener('click',async()=>{
+  if(!reviewed||!$('consent').checked||busy)return;
+  editable(true);status('承認内容を保存しています…');
+  try{const result=await rpc('approveAndSave',{approved:true,batchId,data:reviewed});
+    invalidate();$('json').value='';await refresh();status(result.message);
+  }catch(e){status('保存を確認できませんでした：'+e.message+'\n通信切断の場合は再読込し、保存状況を確認してください。同じ内容の再試行では承認IDを維持します。',true);}
+  finally{editable(false);}
+});
+$('legacy').addEventListener('change',async e=>{
+  invalidate();const file=e.target.files[0];if(!file)return;
+  try{
+    if(file.size>1000000)throw Error('1MB以下のバックアップを選んでください。');
+    const d=JSON.parse(await file.text());
+    if(!Array.isArray(d.cases)||!d.finance||typeof d.finance!=='object'||Array.isArray(d.finance))throw Error('旧HTMLのバックアップ形式ではありません。');
+    const output={source:'旧HTMLバックアップからの移行',sales:d.cases.map((x,i)=>({name:x.name,category:x.category,amount:x.amount,stage:x.stage,nextAction:'',dueDate:'',sourceKey:'legacy-sales-'+i})),finance:[],monthly:Object.entries(d.finance).map(([month,x])=>({month,revenue:x.revenue,expense:x.expense,sourceKey:'legacy-month-'+month}))};
+    $('json').value=JSON.stringify(output,null,2);status('バックアップを画面に取り込みました。修正後「内容を確認」を押してください。');
+  }catch(e){status(e.message,true);}finally{e.target.value='';}
+});
+$('refresh').addEventListener('click',refresh);
+$('prompt').textContent=`アオギリフォレストのAI秘書として、以下の会話から営業・経理の確定できる情報を抽出してください。営業部長AIの視点で案件・次の行動・期限を整理し、経理財務部長AIの視点で売上・経費と入出金予定を区別してください。推測や架空数値を補わず、不明な必須項目は先に質問してください。保存はまだ行いません。出力はJSONのみ。金額は日本円の0以上の整数、日付はYYYY-MM-DD、月はYYYY-MM。sourceに会話題名・日付を記載し、必要なレコードごとに識別用sourceKeyを付けてください。
+形式：
+{"source":"会話題名・日付","sales":[{"name":"営業先名","category":"区分","amount":0,"stage":"調査中","nextAction":"次の行動","dueDate":"","sourceKey":"出典内で一意の識別子"}],"finance":[{"date":"YYYY-MM-DD","type":"経費","amount":0,"partner":"取引先","description":"摘要","dueDate":"","paymentStatus":"未確認","sourceKey":"別の識別子"}],"monthly":[{"month":"YYYY-MM","revenue":0,"expense":0,"sourceKey":"月次識別子"}]}
+営業進捗：調査中／提案予定／商談中／見積提出／受注／失注。
+経理区分：売上／経費／入金予定／支払予定。決済状態：未決済／決済済／未確認。
+使わない配列は空配列にすること。例の0や日付を事実として採用しないこと。月次実績と明細は別管理で二重加算しないこと。`;
+refresh();
+</script></body></html>
